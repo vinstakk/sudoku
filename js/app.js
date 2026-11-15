@@ -523,17 +523,22 @@
       clearTimeout(b.hideT);
       el.textContent = text;
       el.classList.toggle('sticky', !!o.sticky); b.sticky = !!o.sticky;
+      b.actor = actor; b.place();
+      el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+      if (!actor.el.dataset.face && actor.el.dataset.pose !== 'sleep') actor.face('talk');
+      clearTimeout(b.talkT);
+      b.talkT = setTimeout(() => { if (actor.el.dataset.face === 'talk') actor.face(null); }, Math.min(3200, 700 + text.length * 38));
+      if (!o.sticky) b.hideT = setTimeout(() => b.hide(), o.ms || Math.min(11000, 2800 + text.length * 60));
+    };
+    // Position über der Figur (auch neu berechnen, wenn sich die Bildschirmgröße ändert)
+    b.place = () => {
+      const actor = b.actor; if (!actor) return;
       el.style.left = '0px';
       const W = stageEl.clientWidth, bw = el.offsetWidth, cx = actor.x + actor.w / 2;
       const left = Math.max(0, Math.min(W - bw, cx - bw / 2));
       el.style.left = left + 'px';
       el.style.bottom = (actor.h * (actor.el.dataset.pose === 'sleep' ? .78 : .95)) + 'px';
       el.style.setProperty('--tail', Math.max(16, Math.min(bw - 16, cx - left)) + 'px');
-      el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
-      if (!actor.el.dataset.face && actor.el.dataset.pose !== 'sleep') actor.face('talk');
-      clearTimeout(b.talkT);
-      b.talkT = setTimeout(() => { if (actor.el.dataset.face === 'talk') actor.face(null); }, Math.min(3200, 700 + text.length * 38));
-      if (!o.sticky) b.hideT = setTimeout(() => b.hide(), o.ms || Math.min(11000, 2800 + text.length * 60));
     };
     b.hide = (force) => { if (b.sticky && !force) return; b.sticky = false; el.classList.remove('show', 'sticky'); };
     b.visible = () => el.classList.contains('show');
@@ -567,6 +572,7 @@
     gs.el.style.setProperty('--fig-h', Math.max(72, Math.min(150, gs.H - 8)) + 'px');
     gs.a.place(alexX());
     if (gs.v.x > vMaxX()) gs.v.place(vMaxX());
+    if (gs.b.visible()) gs.b.place();
   }
   const alexX = () => gs.W - gs.a.w - 2;
   const vMaxX = () => Math.max(2, alexX() - gs.v.w * .9);
@@ -714,7 +720,7 @@
     new ResizeObserver(homeLayout).observe(hs.el);
     setInterval(homeTick, 1000); hs.next = now() + 4000;
   }
-  function homeLayout() { const W = hs.el.clientWidth; if (!W) return; hs.v.place(W / 2 - hs.v.w + 4); hs.a.place(W / 2 - 2); }
+  function homeLayout() { const W = hs.el.clientWidth; if (!W) return; hs.v.place(W / 2 - hs.v.w + 4); hs.a.place(W / 2 - 2); if (hs.b.visible()) hs.b.place(); }
   function homeTick() {
     if (!$('#screen-home').classList.contains('active') || hs.b.visible() || hs.busy || now() < hs.next) return;
     hs.next = now() + rand(5000, 9000);
@@ -779,7 +785,7 @@
     const ov = $('#intro'), st = $('#intro-stage');
     ov.hidden = false;
     const v = new Figures.Actor(st, 'vincent'), a = new Figures.Actor(st, 'alex'), b = makeBubble(st);
-    const place = () => { const W = st.clientWidth; v.place(W / 2 - v.w + 6); a.place(W / 2 - 4); };
+    const place = () => { const W = st.clientWidth; v.place(W / 2 - v.w + 6); a.place(W / 2 - 4); if (b.visible()) b.place(); };
     place(); new ResizeObserver(place).observe(st);
     let step = 0;
     const btn = $('#intro-next');

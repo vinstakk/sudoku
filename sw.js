@@ -2,7 +2,7 @@
    Alle App-Dateien werden beim Installieren gespeichert. Danach startet die App sofort aus dem Speicher
    und holt im Hintergrund neue Versionen (sichtbar ab dem nächsten Öffnen).
    Bei Änderungen an der Dateiliste VERSION erhöhen. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'alex-sudoku-' + VERSION;
 const FILES = [
   './', 'index.html', 'manifest.webmanifest',
