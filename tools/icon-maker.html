@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>App-Symbol erzeugen</title>
+  <style>body { font-family: system-ui; padding: 16px; background: #eee; } img, canvas { margin: 6px; border-radius: 12px; box-shadow: 0 2px 8px #0003; } #log { white-space: pre; }</style>
+</head>
+<body>
+  <div id="out"></div>
+  <div id="log"></div>
+  <script src="../js/figures.js"></script>
+  <script>
+  // Erzeugt die App-Symbole aus den echten Figuren. Speichern nur mit "node tools/serve.js --icons".
+  const HIDE = ['f-eyes-closed', 'f-legs-sit', 'm-open', 'm-o', 'm-kiss', 'm-flat', 'f-hat', 'f-balloon', 'f-whisk', 'f-sign'];
+  function bust(who, x, y, w) {
+    const holder = document.createElement('div');
+    holder.innerHTML = Figures.svg(who);
+    const svg = holder.firstElementChild;
+    HIDE.forEach(c => svg.querySelectorAll('.' + c).forEach(e => e.remove()));
+    const h = w * 112 / 96;
+    return `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="2 -4 96 112">${svg.innerHTML}</svg>`;
+  }
+  function iconSVG(maskable) {
+    const s = maskable ? .78 : 1, o = 256 * (1 - s);
+    const grid = [1, 2].map(k => `<path d="M${k * 512 / 3} 0V512M0 ${k * 512 / 3}H512" stroke="#fff" stroke-opacity=".22" stroke-width="10"/>`).join('');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+      <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd3dc"/><stop offset=".5" stop-color="#f4919a"/><stop offset="1" stop-color="#d6455d"/></linearGradient></defs>
+      <clipPath id="clip"><rect width="512" height="512" rx="${maskable ? 0 : 112}"/></clipPath>
+      <g clip-path="url(#clip)">
+      <rect width="512" height="512" fill="url(#bg)"/>
+      ${grid}
+      <g transform="translate(${o} ${o}) scale(${s})">
+        <path transform="translate(214 60) scale(3.5)" fill="#fff" stroke="#d6455d" stroke-width="1.4" d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2 0 3.4 1.1 5.4 3.2C14 6.1 15.4 5 17.4 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/>
+        ${bust("vincent", 6, 196, 282)}${bust("alex", 226, 204, 282)}
+      </g></g>
+    </svg>`;
+  }
+  async function render(svg, size, name) {
+    const img = new Image();
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    await img.decode();
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    c.getContext('2d').drawImage(img, 0, 0, size, size);
+    document.getElementById('out').appendChild(c);
+    c.style.width = Math.min(size, 200) + 'px';
+    if (location.hash !== '#save') return;
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    const res = await fetch('/__icon?name=' + name, { method: 'POST', body: blob });
+    document.getElementById('log').textContent += name + ': ' + res.status + '\n';
+  }
+  (async () => {
+    const any = iconSVG(false), mask = iconSVG(true);
+    await render(any, 512, 'icon-512.png');
+    await render(any, 192, 'icon-192.png');
+    await render(mask, 512, 'maskable-512.png');
+    await render(mask, 192, 'maskable-192.png');
+    await render(mask, 180, 'apple-touch-icon.png');
+    await render(any, 64, 'favicon-64.png');
+    document.getElementById('log').textContent += 'fertig';
+  })();
+  </script>
+</body>
+</html>

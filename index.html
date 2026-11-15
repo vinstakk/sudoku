@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#fff0f1" id="theme-color">
+  <title>Alex' Sudoku</title>
+  <meta name="description" content="Sudoku für Alex – mit Vincent als Spielleiter.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/figures.css">
+</head>
+<body>
+  <div id="bg" aria-hidden="true"></div>
+
+  <!-- Symbole für Icons -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2 0 3.4 1.1 5.4 3.2C14 6.1 15.4 5 17.4 5 21 5 23 8.6 21.6 11.8 19.5 16.4 12 21 12 21z"/></symbol>
+      <symbol id="i-paw" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="12" cy="16" rx="5" ry="4.2"/><ellipse cx="5.5" cy="10.5" rx="2.1" ry="2.7"/><ellipse cx="9.5" cy="6.5" rx="2.1" ry="2.8"/><ellipse cx="14.5" cy="6.5" rx="2.1" ry="2.8"/><ellipse cx="18.5" cy="10.5" rx="2.1" ry="2.7"/></g></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z"/></symbol>
+      <symbol id="i-cake" viewBox="0 0 24 24"><g fill="currentColor"><rect x="3" y="12" width="18" height="8" rx="2"/><path d="M5 12c0-3 3-4.5 7-4.5s7 1.5 7 4.5z"/><rect x="11.2" y="2.5" width="1.6" height="5" rx=".8"/></g></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3"/></symbol>
+      <symbol id="i-erase" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M20 20H9L3.6 14.6a2 2 0 010-2.8L12 3.4a2 2 0 012.8 0l5.8 5.8a2 2 0 010 2.8L12 20M7.5 9.5l7 7"/></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M4 20l1-4L16.5 4.5a2.1 2.1 0 013 3L8 19z M14 7l3 3"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M7.8 10.6l2 2 3.6-3.8"/></g></symbol>
+      <symbol id="i-bulb" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 00-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0012 3z"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><g fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1.5"/><rect x="14" y="4.5" width="4" height="15" rx="1.5"/></g></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M3.5 11L12 4l8.5 7M6 9.5V20h4.5v-5h3v5H18V9.5"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></g></symbol>
+      <symbol id="i-zoom" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.8v5.4M7.8 10.5h5.4"/></g></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></g></symbol>
+    </defs>
+  </svg>
+
+  <main id="app">
+    <!-- START -->
+    <section id="screen-home" class="screen">
+      <div class="home-top"><button class="icon-btn" id="btn-options" aria-label="Einstellungen"><svg><use href="#i-gear"/></svg></button></div>
+      <div class="day-banner" id="day-banner" hidden></div>
+      <div class="hero">
+        <div class="stage" id="home-stage"><div class="floor"></div></div>
+        <p class="hello" id="hello">Hallo</p>
+        <h1>Hey Alex!</h1>
+        <p class="sub">Lust auf ein kleines Rätsel?</p>
+      </div>
+
+      <button class="card continue" id="btn-continue" hidden>
+        <span class="continue-label">Weiterspielen</span>
+        <span class="continue-info" id="continue-info"></span>
+        <span class="continue-arrow">›</span>
+      </button>
+
+      <button class="btn primary big" id="btn-new">Neues Rätsel</button>
+
+      <div class="card records">
+        <div class="card-head">
+          <h2><svg class="ico"><use href="#i-star"/></svg> Deine Bestzeiten</h2>
+          <button class="link-btn" id="btn-stats">Statistik ›</button>
+        </div>
+        <div class="records-grid" id="records"></div>
+        <p class="hint-text">Bestzeiten zählen im Zeitmodus – ohne Tipps und ohne „Prüfen“.</p>
+      </div>
+    </section>
+
+    <!-- STATISTIK -->
+    <section id="screen-stats" class="screen">
+      <header class="topbar">
+        <button class="icon-btn" data-go="home" aria-label="Zurück"><svg><use href="#i-back"/></svg></button>
+        <h2>Statistik</h2>
+        <span class="spacer"></span>
+      </header>
+      <div class="stat-tiles" id="stat-tiles"></div>
+      <div class="card">
+        <h3>Nach Größe und Schwierigkeit</h3>
+        <table class="stat-table" id="stat-table"></table>
+        <p class="hint-text">Bestzeit und Durchschnitt zählen nur Rätsel im Zeitmodus ohne Hilfe.</p>
+      </div>
+    </section>
+
+    <!-- EINSTELLUNGEN -->
+    <section id="screen-setup" class="screen">
+      <header class="topbar">
+        <button class="icon-btn" data-go="home" aria-label="Zurück"><svg><use href="#i-back"/></svg></button>
+        <h2>Neues Rätsel</h2>
+        <span class="spacer"></span>
+      </header>
+
+      <div class="card">
+        <h3>Größe</h3>
+        <div class="seg" id="seg-size">
+          <button data-size="9" class="on">9 × 9</button>
+          <button data-size="16">16 × 16</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Symbole</h3>
+        <div class="sets" id="sets"></div>
+      </div>
+
+      <div class="card">
+        <h3>Schwierigkeit</h3>
+        <div class="diffs" id="diffs">
+          <button data-diff="leicht"><span class="paws"><svg><use href="#i-paw"/></svg></span>Leicht</button>
+          <button data-diff="mittel"><span class="paws"><svg><use href="#i-paw"/></svg><svg><use href="#i-paw"/></svg></span>Mittel</button>
+          <button data-diff="schwer"><span class="paws"><svg><use href="#i-paw"/></svg><svg><use href="#i-paw"/></svg><svg><use href="#i-paw"/></svg></span>Schwer</button>
+        </div>
+      </div>
+
+      <div class="card row-between">
+        <div>
+          <h3><svg class="ico"><use href="#i-clock"/></svg> Zeitmodus</h3>
+          <p class="hint-text">Auf Zeit spielen und Rekorde jagen.</p>
+        </div>
+        <button class="switch" id="sw-timed" role="switch" aria-checked="true" aria-label="Zeitmodus"><span></span></button>
+      </div>
+
+      <button class="btn primary big" id="btn-start">Los geht's!</button>
+    </section>
+
+    <!-- OPTIONEN -->
+    <section id="screen-options" class="screen">
+      <header class="topbar">
+        <button class="icon-btn" data-go="home" aria-label="Zurück"><svg><use href="#i-back"/></svg></button>
+        <h2>Einstellungen</h2>
+        <span class="spacer"></span>
+      </header>
+
+      <div class="card">
+        <h3>Design</h3>
+        <div class="seg seg3" id="seg-theme">
+          <button data-theme="system">Wie Handy</button>
+          <button data-theme="light">Hell</button>
+          <button data-theme="dark">Dunkel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="opt-row">
+          <h3>Notizen automatisch entfernen</h3>
+          <button class="switch" id="sw-autonotes" role="switch" aria-checked="false" aria-label="Notizen automatisch entfernen"><span></span></button>
+        </div>
+        <p class="hint-text">Trägst du eine Zahl groß ein, verschwinden dieselben Bleistift-Notizen in ihrer Zeile, Spalte und ihrem Block. „Zurück“ holt sie wieder her – der Radierer nicht.</p>
+      </div>
+    </section>
+
+    <!-- LADEN -->
+    <section id="screen-loading" class="screen">
+      <div class="loading">
+        <div class="bake" id="bake"><svg class="cake" viewBox="0 0 200 200" aria-hidden="true">
+          <g class="steam"><path d="M80 52c-6-8 6-12 0-20"/><path d="M100 46c-6-8 6-12 0-20"/><path d="M120 52c-6-8 6-12 0-20"/></g>
+          <ellipse cx="100" cy="168" rx="72" ry="10" class="plate"/>
+          <rect x="42" y="112" width="116" height="52" rx="10" class="layer1"/>
+          <rect x="52" y="78" width="96" height="40" rx="10" class="layer2"/>
+          <path d="M52 92c0-10 6-14 14-14h68c8 0 14 4 14 14v2c-6 0-6 8-12 8s-6-8-12-8-6 10-12 10-6-10-12-10-6 8-12 8-6-8-12-8-6 10-12 10-6-8-10-8z" class="icing"/>
+          <rect x="96" y="58" width="8" height="22" rx="3" class="candle"/>
+          <path d="M100 40c6 7 6 13 0 16-6-3-6-9 0-16z" class="flame"/>
+          <g class="dots"><circle cx="70" cy="136" r="4"/><circle cx="100" cy="142" r="4"/><circle cx="130" cy="136" r="4"/></g>
+        </svg></div>
+        <p class="loading-text">Dein Rätsel wird gebacken …</p>
+        <div class="loading-bar"><span></span></div>
+      </div>
+    </section>
+
+    <!-- SPIEL -->
+    <section id="screen-game" class="screen">
+      <header class="topbar">
+        <button class="icon-btn" id="btn-home" aria-label="Zum Start"><svg><use href="#i-home"/></svg></button>
+        <div class="game-title">
+          <span id="game-level">Mittel</span>
+          <span class="timer" id="timer" hidden>0:00</span>
+        </div>
+        <button class="icon-btn" id="btn-pause" aria-label="Pause"><svg><use href="#i-pause"/></svg></button>
+      </header>
+
+      <div class="board-wrap" id="board-wrap">
+        <div class="board-scroll" id="board-scroll"><div class="board" id="board"></div></div>
+        <button class="cover" id="cover" hidden>
+          <span class="cover-say" id="cover-say" hidden></span>
+          <span class="holder" id="pause-holder"></span>
+          <span class="cover-text">Antippen zum Weiterspielen</span>
+        </button>
+      </div>
+
+      <div class="tools">
+        <button class="tool" id="t-undo"><svg><use href="#i-undo"/></svg><span>Zurück</span></button>
+        <button class="tool" id="t-erase"><svg><use href="#i-erase"/></svg><span>Radierer</span></button>
+        <button class="tool" id="t-pencil" aria-pressed="false"><svg><use href="#i-pencil"/></svg><span id="t-pencil-label">Bleistift</span></button>
+        <button class="tool" id="t-check"><svg><use href="#i-check"/></svg><span id="t-check-label">Prüfen</span></button>
+        <button class="tool" id="t-zoom" aria-pressed="false" hidden><svg><use href="#i-zoom"/></svg><span>Zoom</span></button>
+        <button class="tool" id="t-tip">
+          <span class="tip-ring"><svg viewBox="0 0 40 40" class="ring"><circle cx="20" cy="20" r="17" class="ring-bg"/><circle cx="20" cy="20" r="17" class="ring-fg" id="tip-ring"/></svg><svg class="tip-ico"><use href="#i-bulb"/></svg></span>
+          <span>Tipp</span>
+        </button>
+      </div>
+
+      <div class="notes-strip" id="notes-strip" hidden></div>
+      <div class="numpad" id="numpad"></div>
+      <div class="dev" id="dev" hidden><button id="dev-almost">Test: fast fertig</button> <button id="dev-moment">Test: Zufallsmoment</button></div>
+      <div class="stage" id="game-stage"><div class="floor"></div></div>
+    </section>
+  </main>
+
+  <!-- Begrüßungsszene beim ersten Öffnen -->
+  <div class="intro" id="intro" hidden>
+    <div class="stage" id="intro-stage"><div class="floor"></div></div>
+    <div class="intro-actions"><button class="btn primary big" id="intro-next">Weiter</button></div>
+  </div>
+
+  <!-- Dialog -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script src="js/sudoku.js"></script>
+  <script src="js/symbols.js"></script>
+  <script src="js/figures.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

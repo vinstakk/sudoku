@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Figuren-Vorschau</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/figures.css">
+  <style>
+    body { padding: 12px; user-select: auto; }
+    .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cell2 { position: relative; width: 104px; height: 150px; background: var(--card); border-radius: 12px; }
+    .cell2 .actor { --fig-h: 120px; left: 50%; margin-left: -36px; bottom: 18px; }
+    .cell2 .actor-alex { margin-left: -34px; }
+    .cell2 b { position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: .65rem; color: var(--muted); }
+    .big { display: flex; gap: 30px; justify-content: center; align-items: flex-end; height: 460px; position: relative; background: var(--card); border-radius: 16px; margin-bottom: 10px; padding-bottom: 10px; }
+    .big .actor { position: relative; --fig-h: 430px; }
+  </style>
+</head>
+<body>
+  <div class="big" id="big"></div>
+  <div class="grid" id="grid"></div>
+  <script src="../js/figures.js"></script>
+  <script>
+    if (location.hash === '#dark') document.documentElement.dataset.theme = 'dark';
+    const big = document.getElementById('big');
+    new Figures.Actor(big, 'vincent'); new Figures.Actor(big, 'alex');
+    const poses = [['idle'], ['walk'], ['wave'], ['think'], ['sit-think'], ['point'], ['cheer'], ['hold'], ['sleep'], ['kiss'], ['no'], ['stir'], ['idle', 'talk'], ['idle', 'happy'], ['idle', 'o'], ['idle', 'yawn'], ['idle', '', 'party'], ['idle', '', 'balloon']];
+    const grid = document.getElementById('grid');
+    for (const who of ['vincent', 'alex']) for (const [p, f, pr] of poses) {
+      const c = document.createElement('div'); c.className = 'cell2'; grid.appendChild(c);
+      const a = new Figures.Actor(c, who); a.pose(p).face(f).props(pr);
+      c.insertAdjacentHTML('beforeend', `<b>${who[0]} ${p} ${f || ''} ${pr || ''}</b>`);
+    }
+  </script>
+</body>
+</html>
